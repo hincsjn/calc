@@ -281,12 +281,11 @@ def main():
     get_moex('EUR')
     get_mercuryo('USD')
     get_mercuryo('EUR')
-    get_qiwi()
     get_garantex()
 
     print(f'\nОтработали за {round(time.time() - st, 2)} секунд(ы)')
 
 
 if __name__ == '__main__':
-    # main()
-    get_qiwi()
+    main()
+    # get_qiwi()
