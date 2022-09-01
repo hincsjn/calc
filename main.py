@@ -221,14 +221,20 @@ def get_qiwi():
 
 
     with requests.session() as s:
-        # l = s.post(log_url, data=payload) # для айтентификации
+        l = s.post(log_url, data=payload) # для аутентификации
+        print(l.status_code)
+        print(l.text)
         r = s.post(data_url, json=payload2, headers=headers)
+        # print(r.status_code)
+        
         if r.status_code == 200:
             data = r.json()
             price = data['elements'][1]['value']
             price = price.replace(' UZS', '').replace(' ', '').replace('.', ',')
         else:
             print(f'Курс QIWI RUB/UZS не найден')
+            print(r.status_code)
+            print(r.text)
             return ''
     
     print(f'Курс QIWI RUB/UZS = {price}')
@@ -282,4 +288,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+    get_qiwi()
