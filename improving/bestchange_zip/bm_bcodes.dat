@@ -1,0 +1,86 @@
+36;AUD;Австралийский доллар;Резервного банка Австралии
+51;AMD;Армянский драм;ЦБ Армении
+124;CAD;Канадский доллар;Банка Канады
+156;CNY;Юань;Банка Китая
+170;COP;Колумбийское песо;Центробанка Колумбии
+203;CZK;Чешская крона;Нацбанка Чехии
+344;HKD;Гонконгский доллар;Управления денежного обращения Гонконга
+348;HUF;Форинт;Венгерского нацбанка
+356;INR;Индийская рупия;Резервного банка Индии
+360;IDR;Индонезийская рупия;Банка Индонезии
+376;ILS;Новый израильский шекель;Банка Израиля
+392;JPY;Японская иена;Банка Японии
+398;KZT;Казахстанский тенге;Нацбанка Казахстана
+417;KGS;Киргизский сом;Нацбанка Кыргызской Республики
+458;MYR;Малайзийский ринггит;Банка Негара Малайзия
+498;MDL;Молдавский лей;Нацбанка Молдовы
+566;NGN;Нигерийская найра;ЦБ Нигерии
+578;NOK;Норвежская крона;Норвежского банка
+643;RUB;Российский рубль;Мосбиржи и ЦБ России
+704;VND;Вьетнамский донг;Госбанка Вьетнама
+752;SEK;Шведская крона;Банка Швеции
+764;THB;Тайский бат;Банка Таиланда
+784;AED;Дирхам ОАЭ;Центральный банк ОАЭ
+826;GBP;Фунт стерлингов;ЦБ Англии
+840;USD;Доллар США;рынка Forex
+860;UZS;Узбекский сум;ЦБ Узбекистана
+944;AZN;Азербайджанский манат;Центробанка Азербайджана
+949;TRY;Турецкая лира;ЦБ Турецкой Республики
+972;TJS;Сомони;Нацбанка Таджикистана
+974;BYN;Белорусский рубль;Нацбанка РБ
+975;BGN;Болгарский лев;Болгарского народного банка
+978;EUR;Евро;Европейского ЦБ
+980;UAH;Гривна;Нацбанка Украины
+981;GEL;Грузинский лари;Нацбанка Грузии
+985;PLN;Польский злотый;Нацбанка Польши
+1000;CRO;Cronos;Poloniex
+1001;BTT;BitTorrent;HitBtc
+1002;BAT;BAT;HitBtc
+1003;ONT;Ontology;HitBtc
+1004;QTUM;QTUM;HitBtc
+1005;LINK;Chainlink;HitBtc
+1006;ATOM;Cosmos;HitBtc
+1007;XTZ;Tezos;HitBtc
+1008;DOT;Polkadot;HitBtc
+1009;UNI;Uniswap;HitBtc
+1010;RVN;Ravencoin;Binance
+1011;VET;VeChain;HitBtc
+1012;SOL;Solana;HitBtc
+1013;SHIB;Shiba Inu;HitBtc
+1014;MATIC;Polygon;HitBtc
+1015;MKR;Maker;HitBtc
+1016;ALGO;Algorand;HitBtc
+1017;AVAX;Avalanche;HitBtc
+1018;LSK;Lisk;HitBtc
+1019;YFI;Yearn.finance;HitBtc
+1020;MANA;Decentraland;HitBtc
+1021;TON;TON;HitBtc
+1022;LUNA;Terra;HitBtc
+1023;NEAR;NEAR Protocol;HitBtc
+1024;ADA;Cardano;HitBtc
+1025;XLM;Stellar;HitBtc
+1026;BTG;Bitcoin Gold;HitBtc
+1027;TRX;TRON;HitBtc
+1028;OMG;OMG Network;HitBtc
+1029;WAVES;WAVES;HitBtc
+1030;XVG;Verge;HitBtc
+1031;ZRX;0x;HitBtc
+1032;BNB;Binance Coin;Binance
+1033;ICX;ICON;HitBtc
+1034;KMD;Komodo;HitBtc
+1035;MIOTA;IOTA;HitBtc
+1036;EOS;EOS;HitBtc
+1037;NEO;NEO;HitBtc
+1038;XEM;NEM;HitBtc
+1039;BCH;Bitcoin BCH;HitBtc
+1040;ZEC;Zcash;HitBtc
+1041;XRP;Ripple;HitBtc
+1042;ETC;Ethereum Classic;HitBtc
+1043;XMR;Monero;HitBtc
+1044;DASH;Dash;HitBtc
+1045;ETH;Ethereum;HitBtc
+1046;BSV;Bitcoin SV;HitBtc
+1047;DOGE;Dogecoin;Poloniex
+1048;LTC;Litecoin;HitBtc
+1049;WMX;WMX (0.001 BTC);BlockChain
+1050;BTC;Bitcoin;BlockChain

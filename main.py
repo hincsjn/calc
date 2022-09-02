@@ -11,6 +11,42 @@ import json
 from datetime import datetime
 import pytz
 
+from selenium import webdriver
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+import os
+
+# test_mode = True
+test_mode = False
+
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--disable-features=NetworkService")
+chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+
+
+chrome_options.add_argument('--allow-running-insecure-content')
+chrome_options.add_argument("window-size=1200,1000")
+user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.50 Safari/537.36'
+chrome_options.add_argument(f'user-agent={user_agent}')
+
+# ------------------------------Изменить переменные перед деплоем-----------------------------------------
+
+spreadsheet_id ='1dba0Xik4GJKlZvM8o2gUapNu95drAZShtrs9MNSYWPA'
+if test_mode:
+    driver = webdriver.Chrome(executable_path="drivers\chromedriver.exe", options=chrome_options)
+else:
+    driver = webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver", options=chrome_options)
+
+
 to_json = {
   "type": "service_account",
   "project_id": "sstesting",
@@ -329,24 +365,48 @@ def get_qiwi():
     return price
 
 
+# def get_garantex():
+#     print('-'*50)
+#     print('Ищем курс Garantex RUB/USDT')
+#     url = 'https://garantex.io/trading/usdtrub'
+
+#     session = HTMLSession()
+#     r = session.get(url)
+#     r.html.render(sleep=1)
+#     page = r.html
+
+#     soup = BeautifulSoup(r.html.raw_html, "html.parser")
+
+#     table = soup.find('tbody', {'class': 'table table-hover usdtrub_bid bids'})
+#     row = table.findAll('tr')[0]
+#     price = row.attrs['data-price']
+#     price = price.replace('.', ',')
+
+#     print(f'Курс Garantex RUB/USDT = {price}')
+
+#     return price
+
+
 def get_garantex():
-    print('-'*50)
-    print('Ищем курс Garantex RUB/USDT')
-    url = 'https://garantex.io/trading/usdtrub'
+    print('Run Garantex')
+    driver.get('https://garantex.io/trading/usdtrub')
+    print('Перешли на сайт')
+    try:
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, "//a[@class = 'btn btn-success']")))
+        driver.find_element(By.XPATH, "//a[@class = 'btn btn-success']").click()
+    except:
+        print('cookies are not acceptable')
+    print('Проверили куки')
 
-    session = HTMLSession()
-    r = session.get(url)
-    r.html.render(sleep=1)
-    page = r.html
-
-    soup = BeautifulSoup(r.html.raw_html, "html.parser")
-
-    table = soup.find('tbody', {'class': 'table table-hover usdtrub_bid bids'})
-    row = table.findAll('tr')[0]
-    price = row.attrs['data-price']
+    try:
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//tbody[@class='table table-hover usdtrub_bid bids']")))
+    except:
+        pass
+    print('дождались')
+    tr = driver.find_element(By.XPATH, "//tbody[@class='table table-hover usdtrub_bid bids']").find_elements(By.TAG_NAME, "tr")
+    price = tr[0].get_attribute('data-price')
     price = price.replace('.', ',')
-
-    print(f'Курс Garantex RUB/USDT = {price}')
+    print(f'Garantex RUB/USDT: {price}')
 
     return price
 
@@ -356,6 +416,15 @@ def main():
     st = time.time()
     adresses_table_adress = get_gs_vals('Z1')[0][0]
     adresses = get_adresses(adresses_table_adress)
+    
+    try:
+        send__to_gs(get_garantex(), adresses['Турция Garantex'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_garantex(), adresses['Турция Garantex'])
+    finally:
+        driver.close()
+        driver.quit()
 
     try:
         mts = get_mts()
@@ -411,11 +480,6 @@ def main():
         time.sleep(2)
         send__to_gs(get_korona_pay(), adresses['Турция Корона'])
 
-    try:
-        send__to_gs(get_garantex(), adresses['Турция Garantex'])
-    except:
-        time.sleep(2)
-        send__to_gs(get_garantex(), adresses['Турция Garantex'])
 
     try:
         send__to_gs(get_moex('USD'), adresses['Мосбиржа USD'])
@@ -455,7 +519,3 @@ def main():
 if __name__ == '__main__':
     main()
     
-    # adresses_table_adress = get_gs_vals('Z1')[0][0]
-    # adresses = get_adresses(adresses_table_adress)
-    # get_qiwi()
-    # send__to_gs(get_p2p(trade_type='SELL', fiat='RUB', payment='RosBank', amount='300000'), adresses['Турция p2p Rosbank'])

@@ -9,8 +9,8 @@ import json
 import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 
-test_mode = True
-# test_mode = False
+# test_mode = True
+test_mode = False
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
@@ -33,7 +33,7 @@ spreadsheet_id ='1dba0Xik4GJKlZvM8o2gUapNu95drAZShtrs9MNSYWPA'
 if test_mode:
     driver = webdriver.Chrome(executable_path="drivers\chromedriver.exe", options=chrome_options)
 else:
-    driver = webdriver.Chrome(executable_path="drivers\chromedriver_linux", options=chrome_options)
+    driver = webdriver.Chrome(executable_path="/usr/lib/chromium-browser/chromedriver", options=chrome_options)
 # spreadsheet_id = '1TCW2UXCQImCHOPv-Dq_B7JA7lFkW-G_WSpUWp8tqNlU'
 # ------------------------------Изменить переменные перед деплоем-----------------------------------------
 
@@ -163,3 +163,6 @@ except:
     # driver = webdriver.Chrome(executable_path="drivers\chromedriver_linux", options=chrome_options)
     qiwi_login()
     send__to_gs(get_qiwi(), 'Калькуляторы!' + adresses['Qiwi'])
+
+driver.close()
+driver.quit()
