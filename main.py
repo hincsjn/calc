@@ -3,6 +3,81 @@ import time
 from bs4 import BeautifulSoup
 from requests_html import HTMLSession
 
+import apiclient.discovery
+from oauth2client.service_account import ServiceAccountCredentials
+import httplib2
+
+import json
+from datetime import datetime
+import pytz
+
+to_json = {
+  "type": "service_account",
+  "project_id": "sstesting",
+  "private_key_id": "1e1d26c21d2b468a0400d0927012ab00e83c644d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCHA8TW+716rtkn\n6mW5w4sPHjlDdcetJoDnZHdu85fVbZsN5M3sDrxL5J7GjZv1Aaegw15xRg+0LDXP\n8lFuFgqmH+uulAPyhv0Se44N6Doce9BjiSJZLkpgvJGEEBeZKRbshzLotrDwJ9Y/\nWufG8bW8scoxbvER+39z5yxmhZqJWmy7UIbLTfo6HENmB2n4oZjctY04dIjN9z2M\nfqc8al+SAJ7qi6NrdwZMZFuDroy+z0BzJbvkrmD0PTSC4hGqiw2prTjLFR4dp1Vv\ni2Rnxk+om6OnK3nsBKoro8YXApYTuqBLJ4zdWJF7KrTg3PHb8thvbZsUyR+aLrA/\nGsYJvzx1AgMBAAECggEAA3FGKJEcoK8qnEjutRDWT9lebmjnYXPU35GBNhQB8BAu\nXulRks5BYNIAdmGP82xKYN/6XXsC1X43FQlBqEPpm5i+wqHFg/6LH1iFI7ejG6zQ\ngGkztgBnJxZHw41BfMc+bWN5GdPmqQjq/oyL0lfBYYFK/X2tqd62vjbLvAV2DkB1\nf/tAUbjS8LqNlSAVozKlx7ze7Z2WzrvVE0wKXQC5wseG9iBffmxbCnd/B50U8XyH\n8xpXPrVejGOLxpDRuEOd3CsFMGlrPoN6YnyyC86DJwav3FyWXkoqNJH0yH2r0kAg\n5YA2iOi2K6xvzmrOtaqJbowITK1J0QgbUgkLOyL8dQKBgQC8l1/s9vYGJPSuhYkJ\nSJ6KuR7GgRNxJu0dVZklgT16DrFNEHOr0jIiNauTnulbyJVuXcsrkhHjgM0KdqYe\nxxiM67LbeKzdTiNfIeyh6GHz2J+FsHDRRiwEp1jHhRbymx3gzavBH5WgTPA5aZ31\nchg8qaJl+24IN/ZbyRkn2j0D/wKBgQC3Rf0eC+8P4XM3KrG8kLcSEC+RyYfw19AX\ndk3jntHHGgQjLbDEdecPeNd/kMx1qY1m5fhO5eWuW/vb5de2DfxdiehiniYfbEiJ\nE2Qnr98UVoU/95RmVJFU+Sk8ZR2wC7GPmEbvkl4fiqtRgsubDtB7byno2WFzQXJW\n4/MF4B3viwKBgCHd6TsLqmi2ED6a+l3xbY8p6U3qdgxW2jPvYD4s9FZL9ykIsE0F\nxT0BeFtdKTjzT2pva4HajF3Xjnq3jeNvC4ia9xaUmC5xzsZRuEXnDlgU6ai/Y7Mh\nL9xyFO5XhyRwGLB7HsHioyMTTfxxbA1cvN9/8wrvWPYe3p3jAiJ2/YgPAoGBAJ3/\nrXYgzakAMKbHnNC2Zc0hvRDPD+3278O6Tu3DtpASAq0dL74+8sLo58dm2o05bdje\nu1GxanAFhryNioi9x+oQARI7yxvd6y6ZVAfO29+Zs2hxFTOfBmeeIgmaFpz1h88G\ndWkF4zUIBCfSPZtgiyVOsW+3MAb/zgXQoGtZShV/AoGBAI4ckDle8OxzcQQuScMh\ndbOhg0rBRiqCmVUC9v40ISO/Nu0+9YVTV5gtm3oGJMIQ5okVZalBGNjq0At1GcqK\np7YFNcUkdgjZhLzldp6dqgC5HhX0HOqLZf/CTxMu6CyudxM5EyDsv0eeyis7T6kW\nDKMqPUxwmag4ekgJYzPmidMg\n-----END PRIVATE KEY-----\n",
+  "client_email": "account@sstesting.iam.gserviceaccount.com",
+  "client_id": "109287569938384590418",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/account%40sstesting.iam.gserviceaccount.com"
+}
+
+with open('test.json', 'w') as f:
+    f.write(json.dumps(to_json))
+CREDENTIALS_FILE = 'test.json'
+
+
+credentials = ServiceAccountCredentials.from_json_keyfile_name(
+    CREDENTIALS_FILE,
+    ['https://www.googleapis.com/auth/spreadsheets',
+     'https://www.googleapis.com/auth/drive'])
+httpAuth = credentials.authorize(httplib2.Http())
+service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
+
+spreadsheet_id ='1dba0Xik4GJKlZvM8o2gUapNu95drAZShtrs9MNSYWPA'
+
+
+def get_gs_vals(adress) -> list([]):
+    val = service.spreadsheets().values().get(   
+        spreadsheetId=spreadsheet_id,
+                range=adress,
+                majorDimension="ROWS",
+        ).execute()
+
+    return val['values'] 
+
+
+def send__to_gs(val, adress):
+    service.spreadsheets().values().batchUpdate(   
+        spreadsheetId=spreadsheet_id,
+        body={
+            "valueInputOption": "USER_ENTERED",
+            "data": [
+                {'range':"Калькуляторы!"+adress,
+                "majorDimension": "ROWS",
+                "values": [[val]]}
+            ]
+            }
+        ).execute()
+
+
+def get_adresses(adress):
+    l = get_gs_vals(adress)
+    dic = {}
+    for row in l:
+        if len(row) != 1:
+            dic[row[0]] = row[1]
+
+    return dic
+
+
+def get_cur_time():
+    print('Работает get cur time')
+    moscow_time = str(datetime.now(pytz.timezone('Europe/Moscow')))[:19]
+    return moscow_time
+
 
 def get_p2p(trade_type='SELL', coin='USDT', fiat='RUB', payment='Tinkoff', amount='300000', orders_count=100, success_rate=0.95):
     print('-'*50)
@@ -38,10 +113,21 @@ def get_p2p(trade_type='SELL', coin='USDT', fiat='RUB', payment='Tinkoff', amoun
                 month_orders = data[row]['advertiser']['monthOrderCount']
                 success_orders = data[row]['advertiser']['monthFinishRate']
                 trade_types = [i['tradeMethodName'] for i in data[row]['adv']['tradeMethods']]
+                min = data[row]['adv']['minSingleTransAmount']
+                max = data[0]['adv']['maxSingleTransAmount']
+
+                # print(f"{row} Ник: {nickname}")
+                # print(f"Цена: {price}")
+                # print(f"Кол-во сделок: {month_orders}")
+                # print(f"% Успешных: {success_orders}")
+                # print(f"Лимит {fiat}: {data[row]['adv']['minSingleTransAmount']} - {data[0]['adv']['maxSingleTransAmount']}")
+                # print(f"Сумма {coin}: {data[row]['adv']['surplusAmount']}")
+                # print(f"Способы оплаты: {trade_types}")
                 
                 # print(data[row]['adv']['tradeMethods'])
                 if payment != '':
                     if payment in trade_types and float(month_orders) > orders_count and float(success_orders) > success_rate:
+                        # and float(min) <= float(amount) <= float(max)
                         # print(f"{row} Ник: {nickname}")
                         # print(f"Цена: {price}")
                         # print(f"Кол-во сделок: {month_orders}")
@@ -49,6 +135,7 @@ def get_p2p(trade_type='SELL', coin='USDT', fiat='RUB', payment='Tinkoff', amoun
                         # print(f"Лимит {fiat}: {data[row]['adv']['minSingleTransAmount']} - {data[0]['adv']['maxSingleTransAmount']}")
                         # print(f"Сумма {coin}: {data[row]['adv']['surplusAmount']}")
                         # print(f"Способы оплаты: {trade_types}")
+                        # print('---')
                         B = True
                         break
                 else:
@@ -257,7 +344,7 @@ def get_garantex():
     table = soup.find('tbody', {'class': 'table table-hover usdtrub_bid bids'})
     row = table.findAll('tr')[0]
     price = row.attrs['data-price']
-    price.replace('.', ',')
+    price = price.replace('.', ',')
 
     print(f'Курс Garantex RUB/USDT = {price}')
 
@@ -267,25 +354,108 @@ def get_garantex():
 def main():
     
     st = time.time()
+    adresses_table_adress = get_gs_vals('Z1')[0][0]
+    adresses = get_adresses(adresses_table_adress)
 
-    get_mts()
-    get_p2p(trade_type='SELL', fiat='RUB', payment='Tinkoff', amount='300000')
-    get_paysend()
-    get_p2p(trade_type='BUY', fiat='UZS', payment='Uzbek National Bank', amount='8725755')
-    get_p2p(trade_type='BUY', fiat='UZS', payment='', amount='8725755')
-    get_p2p(trade_type='BUY', fiat='UZS', payment='Paysend.com', amount='8725755')
-    get_p2p(trade_type='BUY', fiat='UZS', payment='SalamPay', amount='8725755')
-    get_p2p(trade_type='SELL', fiat='RUB', payment='Rosbank', amount='300000')
-    get_korona_pay()
-    get_moex('USD')
-    get_moex('EUR')
-    get_mercuryo('USD')
-    get_mercuryo('EUR')
-    get_garantex()
+    try:
+        mts = get_mts()
+        send__to_gs(mts, adresses['MTC'])
+    except:
+        print('Не удалось отправить МТС')
+
+    try:
+        send__to_gs(get_p2p(trade_type='SELL', fiat='RUB', payment='Tinkoff', amount='300000'), adresses['Тиньк USDT/RUB P2P'])
+    except Exception as E:
+        print('Не удалось отправить тиньк USDT')
+        print(E)
+    
+    try:
+        send__to_gs(get_paysend(), adresses['Paysend RUB/UZS'])
+    except:
+        time.sleep(3)
+        send__to_gs(get_paysend(), adresses['Paysend RUB/UZS'])
+
+    try:
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='Paysend.com', amount=get_gs_vals(adresses['Paysend Объем'])[0][0]), adresses['Paysend USDT/UZS'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='Paysend.com', amount=get_gs_vals(adresses['Paysend Объем'])[0][0]), adresses['Paysend USDT/UZS'])
+        
+    try:
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='Uzbek National Bank', amount=get_gs_vals(adresses['UzbekNationalBank USDT/UZS Объем'])[0][0]), adresses['UzbekNationalBank USDT/UZS'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='Uzbek National Bank', amount=get_gs_vals(adresses['UzbekNationalBank USDT/UZS Объем'])[0][0]), adresses['UzbekNationalBank USDT/UZS'])
+        
+    try:
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='', amount=get_gs_vals(adresses['Solid USDT/UZS Объем'])[0][0]), adresses['Solid USDT/UZS'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='', amount=get_gs_vals(adresses['Solid USDT/UZS Объем'])[0][0]), adresses['Solid USDT/UZS'])
+
+    try:
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='SalamPay', amount= get_gs_vals(adresses['SalamPay USDT/UZS Объем'])[0][0]), adresses['SalamPay USDT/UZS'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_p2p(trade_type='BUY', fiat='UZS', payment='SalamPay', amount= get_gs_vals(adresses['SalamPay USDT/UZS Объем'])[0][0]), adresses['SalamPay USDT/UZS'])
+    
+    try:
+        send__to_gs(get_p2p(trade_type='SELL', fiat='RUB', payment='RosBank', amount='300000'), adresses['Турция p2p Rosbank'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_p2p(trade_type='SELL', fiat='RUB', payment='RosBank', amount='300000'), adresses['Турция p2p Rosbank'])
+    
+    try:
+        send__to_gs(get_korona_pay(), adresses['Турция Корона'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_korona_pay(), adresses['Турция Корона'])
+
+    try:
+        send__to_gs(get_garantex(), adresses['Турция Garantex'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_garantex(), adresses['Турция Garantex'])
+
+    try:
+        send__to_gs(get_moex('USD'), adresses['Мосбиржа USD'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_moex('USD'), adresses['Мосбиржа USD'])
+
+    try:
+        send__to_gs(get_moex('EUR'), adresses['Мосбиржа EUR'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_moex('EUR'), adresses['Мосбиржа EUR'])
+
+    try:
+        send__to_gs(get_cur_time(), adresses['Время обновления'])
+    except:
+        time.sleep(2)
+        print('Ошибка кар тайм')
+        send__to_gs(get_cur_time(), adresses['Время обновления'])
+        
+    try:
+        send__to_gs(get_mercuryo('USD'), adresses['Mercuryo USD/BUSD'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_mercuryo('USD'), adresses['Mercuryo USD/BUSD'])
+
+    try:
+        send__to_gs(get_mercuryo('EUR'), adresses['Mercuryo EUR/BUSD'])
+    except:
+        time.sleep(2)
+        send__to_gs(get_mercuryo('EUR'), adresses['Mercuryo EUR/BUSD'])
+
 
     print(f'\nОтработали за {round(time.time() - st, 2)} секунд(ы)')
 
 
 if __name__ == '__main__':
     main()
+    
+    # adresses_table_adress = get_gs_vals('Z1')[0][0]
+    # adresses = get_adresses(adresses_table_adress)
     # get_qiwi()
+    # send__to_gs(get_p2p(trade_type='SELL', fiat='RUB', payment='RosBank', amount='300000'), adresses['Турция p2p Rosbank'])

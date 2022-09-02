@@ -9,6 +9,8 @@ import json
 import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 
+test_mode = True
+# test_mode = False
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
@@ -28,9 +30,10 @@ chrome_options.add_argument(f'user-agent={user_agent}')
 # ------------------------------Изменить переменные перед деплоем-----------------------------------------
 
 spreadsheet_id ='1dba0Xik4GJKlZvM8o2gUapNu95drAZShtrs9MNSYWPA'
-
-driver = webdriver.Chrome(executable_path="drivers\chromedriver.exe", options=chrome_options)
-
+if test_mode:
+    driver = webdriver.Chrome(executable_path="drivers\chromedriver.exe", options=chrome_options)
+else:
+    driver = webdriver.Chrome(executable_path="drivers\chromedriver_linux", options=chrome_options)
 # spreadsheet_id = '1TCW2UXCQImCHOPv-Dq_B7JA7lFkW-G_WSpUWp8tqNlU'
 # ------------------------------Изменить переменные перед деплоем-----------------------------------------
 
@@ -60,6 +63,41 @@ service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
 
 get_qiwi_url = 'https://qiwi.com/payment/form/38489'
 qiwi_login_url = 'https://qiwi.com/'
+
+
+
+def get_gs_vals(adress) -> list([]):
+    val = service.spreadsheets().values().get(   
+        spreadsheetId=spreadsheet_id,
+                range=adress,
+                majorDimension="ROWS",
+        ).execute()
+
+    return val['values'] 
+
+
+def send__to_gs(val, adress):
+    service.spreadsheets().values().batchUpdate(   
+        spreadsheetId=spreadsheet_id,
+        body={
+            "valueInputOption": "USER_ENTERED",
+            "data": [
+                {'range':adress,
+                "majorDimension": "ROWS",
+                "values": [[val]]}]
+            }
+        ).execute()
+
+
+def get_adresses(adress):
+    l = get_gs_vals(adress)
+    # print(l)
+    dic = {}
+    for row in l:
+        if len(row) != 1:
+            dic[row[0]] = row[1]
+
+    return dic
 
 
 def get_qiwi():
@@ -116,9 +154,12 @@ def qiwi_login():
     sleep(3)
 
 try:
+    adresses_table_adress = get_gs_vals('Калькуляторы!Z1')[0][0]
+    adresses = get_adresses(adresses_table_adress)
+    # print(adresses)
     qiwi_login()
-    print(get_qiwi())
+    send__to_gs(get_qiwi(), 'Калькуляторы!' + adresses['Qiwi'])
 except:
-    driver = webdriver.Chrome(executable_path="drivers\chromedriver_linux", options=chrome_options)
+    # driver = webdriver.Chrome(executable_path="drivers\chromedriver_linux", options=chrome_options)
     qiwi_login()
-    print(get_qiwi())
+    send__to_gs(get_qiwi(), 'Калькуляторы!' + adresses['Qiwi'])
